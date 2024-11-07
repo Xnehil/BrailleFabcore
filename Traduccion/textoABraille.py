@@ -41,3 +41,19 @@ def convertirASeñales(cadena):
     for letra in lower:
         señales.append(braille_signal_dict.get(braille_text_dict.get(letra, letra), letra))
     return señales
+
+def convertirAAngulos(cadena):
+    # To do
+    angulos = []
+    lower = cadena.lower()
+    for letra in lower:
+        señal = braille_signal_dict.get(braille_text_dict.get(letra, letra), letra)
+        angle1 = 180 if señal & 0b100000 else 0
+        angle1 += 180 if señal & 0b010000 else 0
+        angle1 += 180 if señal & 0b001000 else 0
+        # Second angle represents the second Braille column (bits 4, 5, 6)
+        angle2 = 180 if señal & 0b000100 else 0
+        angle2 += 180 if señal & 0b000010 else 0
+        angle2 += 180 if señal & 0b000001 else 0
+        angulos.append([angle1, angle2])
+    return angulos
