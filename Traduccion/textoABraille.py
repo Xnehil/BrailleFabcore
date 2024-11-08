@@ -25,35 +25,40 @@ braille_signal_dict = {
     '⠜': 0b001110,  '⠬': 0b001101, '⠴': 0b001011,'⠸': 0b000111,'⠏': 0b111100,'⠗': 0b111010,  
     '⠧': 0b111001,  '⠝': 0b101110, '⠭': 0b101101,'⠵': 0b101011,'⠹': 0b100111,'⠛': 0b110110,  
     '⠫': 0b110101,  '⠳': 0b110011, '⠯': 0b111101,'⠽': 0b101111,'⠻': 0b110111,'⠷': 0b111011,  
-    '⠟': 0b111110,  '⠮': 0b011101, '⠾': 0b011111,'⠼': 0b001111,'⠿': 0b111111,    
+    '⠟': 0b111110,  '⠮': 0b011101, '⠾': 0b011111,'⠼': 0b001111,'⠿': 0b111111, '⠚': 0b010110, 
+    '⠪': 0b010101, '⠲': 0b010011, '⠜': 0b001110, '⠬': 0b001101, '⠴': 0b001011, '⠞': 0b011110,
+    '⠎': 0b011100
+}
+
+braille_angle_dict = {
+    # El servo solo puede moverse 180 y tenemos 8 posiciones posibles (0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5)
+    0b000: 0, 0b001: 22.5, 0b010: 45, 0b011: 67.5, 0b100: 90, 0b101: 112.5, 0b110: 135, 0b111: 157.5 , ' ': 0
 }
 
 def convertirTextoABraille(cadena):
     braille = ""
-    lower = cadena.lower()
+    lower = cadena.strip().lower()
     for letra in lower:
         braille += braille_text_dict.get(letra, letra)
     return braille
 
 def convertirASeñales(cadena):
     señales = []
-    lower = cadena.lower()
+    lower = cadena.strip().lower()
     for letra in lower:
         señales.append(braille_signal_dict.get(braille_text_dict.get(letra, letra), letra))
     return señales
 
 def convertirAAngulos(cadena):
-    # To do
     angulos = []
-    lower = cadena.lower()
+    lower = cadena.strip().lower()
     for letra in lower:
         señal = braille_signal_dict.get(braille_text_dict.get(letra, letra), letra)
-        angle1 = 180 if señal & 0b100000 else 0
-        angle1 += 180 if señal & 0b010000 else 0
-        angle1 += 180 if señal & 0b001000 else 0
+        # print(f'{letra}: {(señal)}')
+        primerosTres = señal >> 3
+        segundosTres = señal & 0b000111
         # Second angle represents the second Braille column (bits 4, 5, 6)
-        angle2 = 180 if señal & 0b000100 else 0
-        angle2 += 180 if señal & 0b000010 else 0
-        angle2 += 180 if señal & 0b000001 else 0
+        angle1 = braille_angle_dict.get(primerosTres, 0)
+        angle2 = braille_angle_dict.get(segundosTres, 0)
         angulos.append([angle1, angle2])
     return angulos
