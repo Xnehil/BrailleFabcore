@@ -18,28 +18,37 @@ def convertirImagen(imagen, debug=False):
     braille = tb.convertirTextoABraille(texto)
     return braille
 
-def preprocesarImagen(imagen, resize_factor=4):
+def preprocesarImagen(imagen, resize_factor=4, extension='png'):
     norm_img = np.zeros((imagen.shape[0], imagen.shape[1]))
     imagen = cv2.normalize(imagen, norm_img, 0, 255, cv2.NORM_MINMAX)
-    imagen = cv2.bitwise_not(imagen)
 
-    imagen = cv2.resize(imagen, (imagen.shape[1] * resize_factor, imagen.shape[0] * resize_factor))
-    imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
+    # Solo invertir la imagen si el promedio de brillo es menor a 128 (imagen oscura)
+    avg_brightness = np.mean(imagen)
+    if avg_brightness < 128:
+        imagen = cv2.bitwise_not(imagen)
 
-    # cv2.fastNlMeansDenoising(imagen, imagen, 10, 7, 21)
-    #Esto en teoría ayuda al tesseract a reconocer mejor el texto escrito a mano
-    kernel = np.ones((3,3),np.uint8)
-    imagen = cv2.dilate(imagen, kernel, iterations=1)
-    imagen = cv2.erode(imagen, kernel, iterations = 1)
-    # imagen = cv2.medianBlur(imagen, 3)
-    imagen = cv2.adaptiveThreshold(imagen,255,cv2.ADAPTIVE_THRESH_MEAN_C,\
- cv2.THRESH_BINARY,11,2)
+    if extension.lower() in ['png', 'bmp']:
+        imagen = cv2.resize(imagen, (imagen.shape[1] * resize_factor, imagen.shape[0] * resize_factor))
+        imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
+        kernel = np.ones((3, 3), np.uint8)
+        imagen = cv2.dilate(imagen, kernel, iterations=1)
+        imagen = cv2.erode(imagen, kernel, iterations=1)
+        imagen = cv2.adaptiveThreshold(imagen, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
+    elif extension.lower() in ['jpg', 'jpeg']:
+        imagen = cv2.resize(imagen, (imagen.shape[1] * resize_factor, imagen.shape[0] * resize_factor))
+        imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
+        imagen = cv2.GaussianBlur(imagen, (3, 3), 0)
+        _, imagen = cv2.adaptiveThreshold(imagen, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+
     return imagen
 
-def process_png(file_path):
-    image = cv2.imread(file_path)
-    processed_image = preprocesarImagen(image)
-    # Guardar imagen procesada para debug
+def process_image(file_path):
+    # Open the image using PIL
+    image = Image.open(file_path)
+    image = np.array(image)
+    extension = file_path.split('.')[-1]
+    processed_image = preprocesarImagen(image, resize_factor=4, extension=extension)
+
     cv2.imwrite('processed_image.png', processed_image)
     text = pytesseract.image_to_string(processed_image, lang='spa')
     return text
@@ -59,5 +68,6 @@ def process_pdf(file_path):
             image = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
             image = np.array(image)
             processed_image = preprocesarImagen(image)
+            cv2.imwrite('processed_image.png', processed_image)
             text += pytesseract.image_to_string(processed_image, lang='spa')
     return text

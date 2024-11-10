@@ -27,7 +27,7 @@ braille_signal_dict = {
     '⠫': 0b110101,  '⠳': 0b110011, '⠯': 0b111101,'⠽': 0b101111,'⠻': 0b110111,'⠷': 0b111011,  
     '⠟': 0b111110,  '⠮': 0b011101, '⠾': 0b011111,'⠼': 0b001111,'⠿': 0b111111, '⠚': 0b010110, 
     '⠪': 0b010101, '⠲': 0b010011, '⠜': 0b001110, '⠬': 0b001101, '⠴': 0b001011, '⠞': 0b011110,
-    '⠎': 0b011100
+    '⠎': 0b011100, '⠺': 0b010111
 }
 
 braille_angle_dict = {
@@ -37,21 +37,21 @@ braille_angle_dict = {
 
 def convertirTextoABraille(cadena):
     braille = ""
-    lower = cadena.strip().lower()
+    lower = preprocesarTexto(cadena)
     for letra in lower:
         braille += braille_text_dict.get(letra, letra)
     return braille
 
 def convertirASeñales(cadena):
     señales = []
-    lower = cadena.strip().lower()
+    lower = preprocesarTexto(cadena)
     for letra in lower:
         señales.append(braille_signal_dict.get(braille_text_dict.get(letra, letra), letra))
     return señales
 
 def convertirAAngulos(cadena):
     angulos = []
-    lower = cadena.strip().lower()
+    lower = preprocesarTexto(cadena)
     for letra in lower:
         señal = braille_signal_dict.get(braille_text_dict.get(letra, letra), letra)
         # print(f'{letra}: {(señal)}')
@@ -62,3 +62,10 @@ def convertirAAngulos(cadena):
         angle2 = braille_angle_dict.get(segundosTres, 0)
         angulos.append([angle1, angle2])
     return angulos
+
+def preprocesarTexto(cadena):
+    nuevo = cadena.replace('\n', ' ')
+    nuevo = nuevo.replace('...', ' ')
+    nuevo= nuevo.lower().strip()
+    
+    return nuevo
