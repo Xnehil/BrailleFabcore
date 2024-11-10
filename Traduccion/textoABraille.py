@@ -15,7 +15,7 @@ braille_signal_dict = {
     # Por ejemplo, la letra 'á': ⠷ en braille sería:
     #               0b   1  1  1  0  1  1
     #        N°Braille:  1  2  3  4  5  6
-    ' ': 0b000000,  
+    ' ': 0b000000, '': 0b000000,
     '⠁': 0b100000,  '⠂': 0b010000, '⠄': 0b001000,'⠈': 0b000100,'⠐': 0b000010,'⠠': 0b000001,  
     '⠃': 0b110000,  '⠅': 0b101000, '⠉': 0b100100,'⠑': 0b100010,'⠡': 0b100001,'⠆': 0b011000,  
     '⠊': 0b010100,  '⠒': 0b010010, '⠢': 0b010001,'⠌': 0b001100,'⠔': 0b001010,'⠤': 0b001001,  
@@ -39,33 +39,49 @@ def convertirTextoABraille(cadena):
     braille = ""
     lower = preprocesarTexto(cadena)
     for letra in lower:
-        braille += braille_text_dict.get(letra, letra)
+        braille += braille_text_dict.get(letra, '')
     return braille
 
 def convertirASeñales(cadena):
     señales = []
     lower = preprocesarTexto(cadena)
     for letra in lower:
-        señales.append(braille_signal_dict.get(braille_text_dict.get(letra, letra), letra))
+        señales.append(braille_signal_dict.get(braille_text_dict.get(letra, ''), ''))
     return señales
 
 def convertirAAngulos(cadena):
     angulos = []
     lower = preprocesarTexto(cadena)
     for letra in lower:
-        señal = braille_signal_dict.get(braille_text_dict.get(letra, letra), letra)
-        # print(f'{letra}: {(señal)}')
-        primerosTres = señal >> 3
-        segundosTres = señal & 0b000111
-        # Second angle represents the second Braille column (bits 4, 5, 6)
-        angle1 = braille_angle_dict.get(primerosTres, 0)
-        angle2 = braille_angle_dict.get(segundosTres, 0)
-        angulos.append([angle1, angle2])
+        letra_braille = braille_text_dict.get(letra, '')
+        # Chequear si el braille es más de un caracter
+        if len(letra_braille) == 1:
+            señal =  braille_signal_dict.get(letra_braille, '')
+            # print(f'{letra}: {(señal)}')
+            primerosTres = señal >> 3
+            segundosTres = señal & 0b000111
+            # Second angle represents the second Braille column (bits 4, 5, 6)
+            angle1 = braille_angle_dict.get(primerosTres, 0)
+            angle2 = braille_angle_dict.get(segundosTres, 0)
+            angulos.append([angle1, angle2])
+        else:
+            señales = [braille_signal_dict.get(caracter, '') for caracter in letra_braille]
+            # print(f'{letra}: {señales}')
+            for señal in señales:
+                primerosTres = señal >> 3
+                segundosTres = señal & 0b000111
+                # Second angle represents the second Braille column (bits 4, 5, 6)
+                angle1 = braille_angle_dict.get(primerosTres, 0)
+                angle2 = braille_angle_dict.get(segundosTres, 0)
+                angulos.append([angle1, angle2])
     return angulos
+
+import re
 
 def preprocesarTexto(cadena):
     nuevo = cadena.replace('\n', ' ')
     nuevo = nuevo.replace('...', ' ')
+    # nuevo = re.sub(r'[^\w\s]', '', nuevo)
     nuevo= nuevo.lower().strip()
     
     return nuevo
