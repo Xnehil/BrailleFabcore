@@ -38,7 +38,7 @@ def preprocesarImagen(imagen, resize_factor=4, extension='png'):
         imagen = cv2.resize(imagen, (imagen.shape[1] * resize_factor, imagen.shape[0] * resize_factor))
         imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
         imagen = cv2.GaussianBlur(imagen, (3, 3), 0)
-        _, imagen = cv2.adaptiveThreshold(imagen, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        _, imagen = cv2.threshold(imagen, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
     return imagen
 

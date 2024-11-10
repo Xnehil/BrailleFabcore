@@ -46,7 +46,11 @@ def convertirASeñales(cadena):
     señales = []
     lower = preprocesarTexto(cadena)
     for letra in lower:
-        señales.append(braille_signal_dict.get(braille_text_dict.get(letra, ''), ''))
+        letra_braille = braille_text_dict.get(letra, '')
+        if len(letra_braille) == 1:
+            señales.append(braille_signal_dict.get(letra_braille, ''))
+        else:
+            señales += [braille_signal_dict.get(caracter, '') for caracter in letra_braille]
     return señales
 
 def convertirAAngulos(cadena):
