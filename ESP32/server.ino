@@ -2,13 +2,13 @@
 #include <ESPAsyncWebServer.h>
 #include <ESP32Servo.h>
 
-const char* ssid = "Wokwi-GUEST";
-const char* password = "";
+const char* ssid = "JOSELITO1250-5G";
+const char* password = "991125484";
 
 Servo servo1;
 Servo servo2;
-const int buttonPin = 14;
-const int ledPin = 15;
+// const int buttonPin = 14;
+// const int ledPin = 15;
 
 AsyncWebServer server(80);
 
@@ -24,8 +24,8 @@ void setup() {
 
   servo1.attach(12);
   servo2.attach(13);
-  pinMode(buttonPin, INPUT_PULLUP);
-  pinMode(ledPin, OUTPUT);
+  // pinMode(buttonPin, INPUT_PULLUP);
+  // pinMode(ledPin, OUTPUT);
 
   server.on("/angulos", HTTP_POST, [](AsyncWebServerRequest *request){
     if (request->hasParam("angle1", true) && request->hasParam("angle2", true)) {
@@ -33,9 +33,9 @@ void setup() {
       int angle2 = request->getParam("angle2", true)->value().toInt();
       servo1.write(angle1);
       servo2.write(angle2);
-      digitalWrite(ledPin, HIGH); 
-      delay(1000); 
-      digitalWrite(ledPin, LOW); 
+      // digitalWrite(ledPin, HIGH); 
+      // delay(1000); 
+      // digitalWrite(ledPin, LOW); 
       request->send(200, "text/plain", "Ángulos actualizados");
     } else {
       request->send(400, "text/plain", "Petición incorrecta");
@@ -47,9 +47,9 @@ void setup() {
 
 void loop() {
   // Check button state
-  if (digitalRead(buttonPin) == LOW) {
-    Serial.println("Button pressed");
-  }
+  // if (digitalRead(buttonPin) == LOW) {
+  //   Serial.println("Button pressed");
+  // }
 
   if (Serial.available() > 0) {
     String command = Serial.readStringUntil('\n');
@@ -68,9 +68,10 @@ void loop() {
     Serial.print(angle1);
     Serial.print(", ");
     Serial.println(angle2);
-    
-    digitalWrite(ledPin, HIGH); // Turn on LED when command is received
-    delay(1000); // Keep LED on for 1 second
-    digitalWrite(ledPin, LOW); // Turn off LED
+    Serial.println("\n");
+      
+    // digitalWrite(ledPin, HIGH); // Turn on LED when command is received
+    // delay(1000); // Keep LED on for 1 second
+    // digitalWrite(ledPin, LOW); // Turn off LED
   }
 }
