@@ -31,8 +31,8 @@ braille_signal_dict = {
 }
 
 braille_angle_dict = {
-    # El servo puede moverse 360 grados y tenemos 8 posiciones posibles (0, 45, 90, 135, 180, 225, 270, 315)
-    0b000: 0, 0b001: 45, 0b010: 90, 0b011: 135, 0b100: 180, 0b101: 225, 0b110: 270, 0b111: 315, ' ': 0
+    # El servo puede moverse 180 grados y tenemos 8 posiciones posibles (0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5)
+    0b000: 45, 0b001: 67.5, 0b010: 112.5, 0b011: 90, 0b100: 22.5, 0b101: 0, 0b110: 135, 0b111: 157.5, ' ': 0
 }
 
 def convertirTextoABraille(cadena):

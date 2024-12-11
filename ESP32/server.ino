@@ -2,7 +2,7 @@
 #include <ESPAsyncWebServer.h>
 #include <ESP32Servo.h>
 
-const char* ssid = "JOSELITO1250-5G";
+const char* ssid = "JOSELITO1250";
 const char* password = "991125484";
 
 Servo servo1;
@@ -22,8 +22,8 @@ void setup() {
   Serial.println("Connected to WiFi");
   Serial.println(WiFi.localIP());
 
-  servo1.attach(12);
-  servo2.attach(13);
+  servo1.attach(5);
+  servo2.attach(18);
   // pinMode(buttonPin, INPUT_PULLUP);
   // pinMode(ledPin, OUTPUT);
 
@@ -46,17 +46,12 @@ void setup() {
 }
 
 void loop() {
-  // Check button state
-  // if (digitalRead(buttonPin) == LOW) {
-  //   Serial.println("Button pressed");
-  // }
-
   if (Serial.available() > 0) {
     String command = Serial.readStringUntil('\n');
-    command.trim(); // Remove any leading/trailing whitespace
-    command.remove(0, 1); // Remove the opening '('
-    command.remove(command.length() - 1, 1); // Remove the closing ')'
-    
+    command.trim(); 
+    command.remove(0, 1); 
+    command.remove(command.length() - 1, 1);
+
     int commaIndex = command.indexOf(',');
     int angle1 = command.substring(0, commaIndex).toInt();
     int angle2 = command.substring(commaIndex + 1).toInt();
@@ -69,9 +64,5 @@ void loop() {
     Serial.print(", ");
     Serial.println(angle2);
     Serial.println("\n");
-      
-    // digitalWrite(ledPin, HIGH); // Turn on LED when command is received
-    // delay(1000); // Keep LED on for 1 second
-    // digitalWrite(ledPin, LOW); // Turn off LED
   }
 }
