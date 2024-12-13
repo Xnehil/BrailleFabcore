@@ -2,8 +2,8 @@
 #include <ESPAsyncWebServer.h>
 #include <ESP32Servo.h>
 
-const char* ssid = "LAPTOP-05R42Q57 3226";
-const char* password = "28*7U3f1";
+const char* ssid = "redpucp";
+const char* password = "C9AA28BA93";
 
 Servo servo1;
 Servo servo2;
